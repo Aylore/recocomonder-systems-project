@@ -1,7 +1,17 @@
 import pandas as pd
 import pickle
+# import argparse
+import tensorflow as tf
 
+# parser = argparse.ArgumentParser(description='get recommendations')
+
+# parser.add_argument('--userId', type=int, 
+# 					help='the user id you want to recommend for', required=True)
+# args = parser.parse_args()
+# # userId =args.userId
+# # print(args)
 def top_10_recommendations(userId):
+
     # Loading all the datasets needed:
     movies_df_mod = pd.read_csv('data/movies_mod.csv')
     ratings_df_removed = pd.read_csv('data/ratings_df_last_liked_movie_removed.csv')
@@ -119,9 +129,9 @@ def top_10_recommendations(userId):
     del template_df
     
     # Loading in all models
-    genres_model = tf.keras.models.load_model('models/genres_model.h5', compile=True)
-    tags_model = pickle.load(open('tags_model.sav', 'rb'))
-    combine_model = pickle.load(open('combine_model.sav', 'rb'))
+    genres_model = tf.keras.models.load_model('data/models/genres_model.h5', compile=True)
+    tags_model = pickle.load(open('data/tags_model.sav', 'rb'))
+    combine_model = pickle.load(open('data/combine_model.sav', 'rb'))
     
     # Predicting with the genres model and tags model:
     genres_model_predictions = (genres_model.predict(x= [genres_like_input, genres_dislike_input, genres_movie_input])) * 5 ## Rescaling up; predicts a scaled and bound (sigmoid, 0-1) values
@@ -169,3 +179,4 @@ def top_10_recommendations(userId):
     return predictions_df, best_movies_df
     
     
+
