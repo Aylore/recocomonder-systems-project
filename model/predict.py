@@ -13,8 +13,8 @@ import tensorflow as tf
 def top_10_recommendations(userId):
 
     # Loading all the datasets needed:
-    movies_df_mod = pd.read_csv('data/movies_mod.csv')
-    ratings_df_removed = pd.read_csv('data/ratings_df_last_liked_movie_removed.csv')
+    movies_df_mod = pd.read_csv('model/data/movies_mod.csv')
+    ratings_df_removed = pd.read_csv('model/data/ratings_df_last_liked_movie_removed.csv')
 
     
     # Gathering all the movies in the dataset:
@@ -40,8 +40,8 @@ def top_10_recommendations(userId):
             not_watched.remove(movie)
             
     # Loading in users' like and disliked genres:
-    total_user_like_df = pd.read_csv('data/total_user_like_df.csv')
-    total_user_dislike_df = pd.read_csv('data/total_user_dislike_df.csv') 
+    total_user_like_df = pd.read_csv('model/data/total_user_like_df.csv')
+    total_user_dislike_df = pd.read_csv('model/data/total_user_dislike_df.csv') 
 
     
     # Selecting from total_user_like_df and total_user_dislike_df to isolate only the userId input:
@@ -81,8 +81,8 @@ def top_10_recommendations(userId):
     total_user_dislike_df.columns = dislike_columns_modified
 
     # Loading in tags:
-    movie_tags_df = pd.read_csv('data/final/movie_tags_df.csv')
-    like_dislike_tags = (pd.read_csv('data/final/like_dislike_tags.csv')).astype('int64')
+    movie_tags_df = pd.read_csv('model/data/final/movie_tags_df.csv')
+    like_dislike_tags = (pd.read_csv('model/data/final/like_dislike_tags.csv')).astype('int64')
     
     # Selecting the movies that have not been seen from movie_tags_df and merging movies_df_mod and movie_tags_df:
     template_df = pd.DataFrame({'movieId': not_watched}, index= list(range(len(not_watched)))) ## Creating a template DF for merging
@@ -129,9 +129,9 @@ def top_10_recommendations(userId):
     del template_df
     
     # Loading in all models
-    genres_model = tf.keras.models.load_model('data/models/genres_model.h5', compile=True)
-    tags_model = pickle.load(open('data/tags_model.sav', 'rb'))
-    combine_model = pickle.load(open('data/combine_model.sav', 'rb'))
+    genres_model = tf.keras.models.load_model('model/data/models/genres_model.h5', compile=True)
+    tags_model = pickle.load(open('model/data/tags_model.sav', 'rb'))
+    combine_model = pickle.load(open('model/data/combine_model.sav', 'rb'))
     
     # Predicting with the genres model and tags model:
     genres_model_predictions = (genres_model.predict(x= [genres_like_input, genres_dislike_input, genres_movie_input])) * 5 ## Rescaling up; predicts a scaled and bound (sigmoid, 0-1) values
@@ -180,3 +180,4 @@ def top_10_recommendations(userId):
     
     
 
+top_10_recommendations(5)
